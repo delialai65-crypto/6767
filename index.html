@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniLine 智慧會員與即時客服中心</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body { font-family: 'Noto+Sans+TC', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        /* 隱藏捲軸但保持滾動 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- 頂部導覽列 -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-emerald-500/20">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-900">OmniLine</h1>
+                    <p class="text-xs text-emerald-600 font-medium">智慧會員與即時互動中心</p>
+                </div>
+            </div>
+
+            <!-- 桌面版導覽 -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <button onclick="switchTab('home')" class="nav-btn-home px-4 py-2 rounded-lg text-sm font-medium text-emerald-600 bg-emerald-50 transition-all">首頁</button>
+                <button onclick="switchTab('chat')" class="nav-btn-chat px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all">真實聊天客服</button>
+                <button onclick="switchTab('friend')" class="nav-btn-friend px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all">加LINE好友</button>
+                <button onclick="switchTab('pricing')" class="nav-btn-pricing px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all">方案購買</button>
+                <button onclick="switchTab('member')" class="nav-btn-member px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all">會員中心</button>
+            </nav>
+
+            <!-- 右上角登入狀態 -->
+            <div id="auth-header-action">
+                <button onclick="openLoginModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 shadow-sm transition-all flex items-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>登入 / 註冊</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區塊 -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 mb-20 md:mb-6">
+
+        <!-- 1. 首頁 Tab -->
+        <div id="tab-home" class="space-y-6 tab-content">
+            <div class="relative rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-8 md:p-12 overflow-hidden shadow-xl">
+                <div class="relative z-10 max-w-xl space-y-4">
+                    <span class="px-3 py-1 rounded-full bg-white/20 text-xs font-semibold backdrop-blur-md">⚡ 全新升級 2.0 版</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">打造無縫的 LINE 互動與會員體驗</h2>
+                    <p class="text-emerald-100 text-sm md:text-base leading-relaxed">
+                        串接真實 LINE 官方帳號、即時對話客服、會員方案解鎖與多元金流模擬，全面滿足您的商業與社群自動化需求。
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <button onclick="switchTab('friend')" class="px-6 py-3 rounded-xl bg-white text-emerald-700 font-bold text-sm shadow-lg hover:bg-emerald-50 transition-all flex items-center space-x-2">
+                            <i class="fa-brands fa-line text-lg text-emerald-600"></i>
+                            <span>立即加入真實好友</span>
+                        </button>
+                        <button onclick="switchTab('chat')" class="px-6 py-3 rounded-xl bg-emerald-800/60 text-white font-medium text-sm border border-emerald-400/30 hover:bg-emerald-800 transition-all">
+                            體驗網頁即時客服
+                        </button>
+                    </div>
+                </div>
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+                    <i class="fa-brands fa-line"></i>
+                </div>
+            </div>
+
+            <!-- 功能捷徑卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div onclick="switchTab('chat')" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">即時線上客服</h3>
+                    <p class="text-xs text-slate-500">線上即時對話，快速解答您的方案與技術疑問。</p>
+                </div>
+                <div onclick="switchTab('friend')" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">真實加好友領紅利</h3>
+                    <p class="text-xs text-slate-500">點擊專屬連結或掃描 QR Code，領取 NT$100 購物金。</p>
+                </div>
+                <div onclick="switchTab('pricing')" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">彈性方案購買</h3>
+                    <p class="text-xs text-slate-500">支援信用卡、LINE Pay、超商代碼等多元金流模擬。</p>
+                </div>
+                <div onclick="switchTab('member')" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">會員中心與訂閱</h3>
+                    <p class="text-xs text-slate-500">管理您的個人資料、已購方案與帳號安全狀態。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 即時聊天客服 Tab -->
+        <div id="tab-chat" class="hidden tab-content">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row h-[650px]">
+                <!-- 左側客服資訊 -->
+                <div class="w-full md:w-80 bg-slate-900 text-white p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm">OmniLine 智能客服</h3>
+                                <p class="text-xs text-emerald-400 flex items-center space-x-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>線上運作中</span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                            您可以直接在此輸入關於方案訂閱、LINE 官方帳號串接或會員登入的問題，系統將即時為您回覆！
+                        </p>
+                        <div class="space-y-2">
+                            <button onclick="sendPresetQuery('我想了解方案價格')" class="w-full text-left text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-xl transition-all">
+                                💡 我想了解方案價格與功能
+                            </button>
+                            <button onclick="sendPresetQuery('怎麼加入真實好友？')" class="w-full text-left text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-xl transition-all">
+                                💡 如何加入真實官方 LINE 好友？
+                            </button>
+                            <button onclick="sendPresetQuery('支援哪些付款方式？')" class="w-full text-left text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-xl transition-all">
+                                💡 支援哪些付款方式？
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 pt-4 border-t border-slate-800">
+                        安全加密通訊 • 支援 24/7 自動回覆
+                    </div>
+                </div>
+
+                <!-- 右側聊天主介面 -->
+                <div class="flex-grow flex flex-col bg-slate-50 h-full">
+                    <!-- 聊天室對話框容器 -->
+                    <div id="chat-messages" class="flex-grow p-4 md:p-6 overflow-y-auto space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs flex-shrink-0">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-md text-sm text-slate-700">
+                                您好！我是 OmniLine 客服小幫手，很高興為您服務。請問有什麼我可以協助您的嗎？
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 輸入框 -->
+                    <div class="p-4 bg-white border-t border-slate-100 flex items-center space-x-2">
+                        <input type="text" id="chat-input" placeholder="輸入您的問題..." class="flex-grow bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition-all" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                        <button onclick="sendChatMessage()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl text-sm font-medium transition-all shadow-md shadow-emerald-600/20">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 加 LINE 好友 Tab -->
+        <div id="tab-friend" class="hidden tab-content space-y-6">
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm text-center max-w-2xl mx-auto space-y-6">
+                <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-inner">
+                    <i class="fa-brands fa-line"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold text-slate-900">加入 OmniLine 真實官方 LINE 好友</h2>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto">
+                        掃描下方 QR Code 或點擊按鈕跳轉至真實 LINE 官方帳號頁面，加好友立即解鎖專屬優惠與推播通知！
+                    </p>
+                </div>
+
+                <!-- 真實 QR Code 圖片模擬 (使用 LINE 官方加好友連結產生器格式) -->
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block">
+                    <!-- 這裡使用公開 API 產生真實連至 LINE 官方帳號的 QR Code -->
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://line.me/R/ti/p/@omniline" alt="LINE QR Code" class="rounded-xl mx-auto">
+                    <p class="text-xs text-slate-400 mt-2 font-mono">ID: @omniline</p>
+                </div>
+
+                <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                    <!-- 真實 LINE 好友連結 -->
+                    <a href="https://line.me/R/ti/p/@omniline" target="_blank" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-line text-lg"></i>
+                        <span>點擊立刻加好友</span>
+                    </a>
+                    <button onclick="claimBonus()" class="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm transition-all">
+                        🎁 我已加好友，領取 NT$100 購物金
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 方案購買 Tab -->
+        <div id="tab-pricing" class="hidden tab-content space-y-8">
+            <div class="text-center space-y-3 max-w-xl mx-auto">
+                <h2 class="text-3xl font-extrabold text-slate-900">選擇適合您的專業方案</h2>
+                <p class="text-sm text-slate-500">透明的定價與強大的自動化工具，支援信用卡、LINE Pay 與超商代碼模擬結帳。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 方案 1 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+                    <div class="space-y-4">
+                        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">新手入門版</span>
+                        <h3 class="text-xl font-bold text-slate-900">個人與小編</h3>
+                        <div class="flex items-baseline space-x-1">
+                            <span class="text-3xl font-extrabold text-slate-900">NT$ 399</span>
+                            <span class="text-xs text-slate-400">/ 月</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-600 pt-2">
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>基本網頁客服嵌入</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>LINE 登入與會員管理</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>每月 1,000 次訊息額度</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openCheckout('新手入門版', 399)" class="mt-8 w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm transition-all">
+                        立即訂閱
+                    </button>
+                </div>
+
+                <!-- 方案 2 (熱門) -->
+                <div class="bg-gradient-to-b from-slate-900 to-slate-800 text-white rounded-3xl p-8 shadow-xl flex flex-col justify-between relative transform md:-translate-y-2">
+                    <div class="absolute -top-3 right-6 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        最受歡迎
+                    </div>
+                    <div class="space-y-4">
+                        <span class="px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-xs font-semibold">專業成長版</span>
+                        <h3 class="text-xl font-bold">企業商務型</h3>
+                        <div class="flex items-baseline space-x-1">
+                            <span class="text-3xl font-extrabold">NT$ 999</span>
+                            <span class="text-xs text-slate-400">/ 月</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-300 pt-2">
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>進階 AI 自動回覆機器人</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>完整好友分眾與標籤系統</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>每月 10,000 次訊息額度</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>優先真人客服支援</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openCheckout('企業商務型', 999)" class="mt-8 w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/30 transition-all">
+                        立即訂閱
+                    </button>
+                </div>
+
+                <!-- 方案 3 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+                    <div class="space-y-4">
+                        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">旗艦無限版</span>
+                        <h3 class="text-xl font-bold text-slate-900">旗艦企業團</h3>
+                        <div class="flex items-baseline space-x-1">
+                            <span class="text-3xl font-extrabold text-slate-900">NT$ 2,999</span>
+                            <span class="text-xs text-slate-400">/ 月</span>
+                        </div>
+                        <ul class="space-y-3 text-xs text-slate-600 pt-2">
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>無限訊息額度與多帳號串接</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>客製化 API 與 Webhook 串接</span></li>
+                            <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>專屬顧問 1對1 技術支援</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openCheckout('旗艦企業團', 2999)" class="mt-8 w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm transition-all">
+                        立即訂閱
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 會員中心 Tab -->
+        <div id="tab-member" class="hidden tab-content space-y-6">
+            <div id="member-guest-view" class="bg-white rounded-3xl p-12 border border-slate-100 shadow-sm text-center max-w-lg mx-auto space-y-4">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full mx-auto flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">尚未登入會員</h3>
+                <p class="text-xs text-slate-500">請先登入帳號以檢視您的個人檔案、已訂閱方案與紅利購物金餘額。</p>
+                <button onclick="openLoginModal()" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition-all">
+                    立即登入 / 註冊
+                </button>
+            </div>
+
+            <div id="member-user-view" class="hidden space-y-6 max-w-3xl mx-auto">
+                <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-bold text-2xl flex items-center justify-center shadow-md">
+                            <span id="user-avatar-text">U</span>
+                        </div>
+                        <div>
+                            <h3 id="user-display-name" class="text-xl font-bold text-slate-900">使用者名稱</h3>
+                            <p id="user-display-email" class="text-xs text-slate-400">user@example.com</p>
+                            <span class="inline-block mt-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold" id="user-badge">免費體驗會員</span>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-medium transition-all">
+                        登出帳號
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-2">
+                        <span class="text-xs text-slate-400 font-medium">可用購物金 / 紅利</span>
+                        <div class="text-2xl font-black text-slate-900" id="user-bonus-balance">NT$ 0</div>
+                        <p class="text-[11px] text-emerald-600">完成加好友可額外獲得 NT$ 100 紅利</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-2">
+                        <span class="text-xs text-slate-400 font-medium">目前訂閱方案</span>
+                        <div class="text-xl font-bold text-slate-900" id="user-current-plan">無有效方案</div>
+                        <p class="text-[11px] text-slate-400" id="user-plan-status">請前往方案購買頁面選購</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 手機底部導覽列 (Mobile Bottom Nav) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around py-3 shadow-lg">
+        <button onclick="switchTab('home')" class="mobile-nav-btn text-emerald-600 flex flex-col items-center space-y-1 text-xs font-medium" data-target="home">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span>首頁</span>
+        </button>
+        <button onclick="switchTab('chat')" class="mobile-nav-btn text-slate-400 flex flex-col items-center space-y-1 text-xs font-medium" data-target="chat">
+            <i class="fa-solid fa-comments text-lg"></i>
+            <span>客服</span>
+        </button>
+        <button onclick="switchTab('friend')" class="mobile-nav-btn text-slate-400 flex flex-col items-center space-y-1 text-xs font-medium" data-target="friend">
+            <i class="fa-brands fa-line text-lg"></i>
+            <span>加好友</span>
+        </button>
+        <button onclick="switchTab('pricing')" class="mobile-nav-btn text-slate-400 flex flex-col items-center space-y-1 text-xs font-medium" data-target="pricing">
+            <i class="fa-solid fa-tags text-lg"></i>
+            <span>方案</span>
+        </button>
+        <button onclick="switchTab('member')" class="mobile-nav-btn text-slate-400 flex flex-col items-center space-y-1 text-xs font-medium" data-target="member">
+            <i class="fa-solid fa-id-card text-lg"></i>
+            <span>會員</span>
+        </button>
+    </nav>
+
+    <!-- 登入彈窗 Modal -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 space-y-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeLoginModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">會員快速登入</h3>
+                <p class="text-xs text-slate-500">使用模擬 LINE 授權登入或輸入帳號進行會員體驗</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- 模擬 LINE 一鍵登入按鈕 -->
+                <button onclick="simulateLineLogin()" class="w-full py-3 rounded-xl bg-[#06C755] hover:bg-[#05b34c] text-white font-bold text-sm shadow-md flex items-center justify-center space-x-2 transition-all">
+                    <i class="fa-brands fa-line text-lg"></i>
+                    <span>使用 LINE 帳號快速登入</span>
+                </button>
+
+                <div class="flex items-center my-4">
+                    <div class="flex-grow border-t border-slate-100"></div>
+                    <span class="px-3 text-xs text-slate-400">或使用 Email 登入</span>
+                    <div class="flex-grow border-t border-slate-100"></div>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">電子信箱</label>
+                        <input type="email" id="login-email" placeholder="name@example.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">姓名 / 暱稱</label>
+                        <input type="text" id="login-name" placeholder="請輸入您的姓名" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <button onclick="handleEmailLogin()" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm transition-all shadow-md">
+                    確認登入
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 結帳方案彈窗 Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 space-y-6 shadow-2xl relative">
+            <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="space-y-1">
+                <h3 class="text-xl font-bold text-slate-900" id="checkout-plan-title">方案訂閱確認</h3>
+                <p class="text-xs text-slate-500" id="checkout-plan-price">NT$ 0 / 月</p>
+            </div>
+
+            <div class="space-y-4">
+                <label class="block text-xs font-medium text-slate-700">選擇付款方式</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="selectPaymentMethod('linepay')" id="pm-linepay" class="payment-method-btn p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 text-center flex flex-col items-center space-y-1 transition-all">
+                        <i class="fa-brands fa-line text-xl text-[#06C755]"></i>
+                        <span class="text-xs font-bold text-slate-800">LINE Pay</span>
+                    </button>
+                    <button onclick="selectPaymentMethod('credit')" id="pm-credit" class="payment-method-btn p-3 rounded-2xl border-2 border-slate-200 text-center flex flex-col items-center space-y-1 transition-all">
+                        <i class="fa-solid fa-credit-card text-xl text-slate-600"></i>
+                        <span class="text-xs font-bold text-slate-800">信用卡</span>
+                    </button>
+                    <button onclick="selectPaymentMethod('cvs')" id="pm-cvs" class="payment-method-btn p-3 rounded-2xl border-2 border-slate-200 text-center flex flex-col items-center space-y-1 transition-all">
+                        <i class="fa-solid fa-store text-xl text-amber-600"></i>
+                        <span class="text-xs font-bold text-slate-800">超商代碼</span>
+                    </button>
+                </div>
+
+                <!-- 動態付款輸入區 -->
+                <div id="payment-form-container" class="pt-2">
+                    <!-- 預設 LINE Pay 提示 -->
+                    <div id="form-linepay" class="p-4 bg-emerald-50 rounded-2xl text-xs text-emerald-800 text-center space-y-2">
+                        <p class="font-bold">將為您跳轉至 LINE Pay 進行安全授權扣款</p>
+                        <p class="text-slate-500">支援點數折抵與綁定信用卡</p>
+                    </div>
+                    <!-- 信用卡表單 (預設隱藏) -->
+                    <div id="form-credit" class="hidden space-y-3">
+                        <input type="text" placeholder="信用卡卡號 (4311-xxxx-xxxx-xxxx)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" placeholder="MM/YY" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs">
+                            <input type="password" placeholder="CVV 安全碼" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs">
+                        </div>
+                    </div>
+                    <!-- 超商代碼提示 (預設隱藏) -->
+                    <div id="form-cvs" class="hidden p-4 bg-amber-50 rounded-2xl text-xs text-amber-900 text-center space-y-1">
+                        <p class="font-bold">將產生超商繳費代碼 (ibon / FamiPort)</p>
+                        <p class="text-slate-500">請於 3 小時內至各大超商機台列印繳費</p>
+                    </div>
+                </div>
+
+                <button onclick="processCheckout()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all">
+                    確認付款並啟用方案
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400">
+        <p>&copy; 2026 OmniLine Inc. All rights reserved. 串接真實 LINE 官方帳號 (@omniline)</p>
+    </footer>
+
+    <!-- JavaScript 互動邏輯 -->
+    <script>
+        // 全域會員狀態
+        let currentUser = JSON.parse(localStorage.getItem('omniline_user')) || null;
+        let selectedPlan = { name: '', price: 0 };
+        let currentPaymentType = 'linepay';
+
+        // 初始化載入
+        window.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+        });
+
+        // 頁籤切換邏輯
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // 更新桌面版導覽按鈕樣式
+            document.querySelectorAll('header nav button').forEach(btn => {
+                btn.className = "px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all";
+            });
+            const activeDesktopBtn = document.querySelector(`.nav-btn-${tabId}`);
+            if(activeDesktopBtn) {
+                activeDesktopBtn.className = "px-4 py-2 rounded-lg text-sm font-medium text-emerald-600 bg-emerald-50 transition-all";
+            }
+
+            // 更新手機版導覽按鈕樣式
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.className = "mobile-nav-btn text-slate-400 flex flex-col items-center space-y-1 text-xs font-medium";
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.className = "mobile-nav-btn text-emerald-600 flex flex-col items-center space-y-1 text-xs font-medium";
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 登入彈窗控制
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-modal').classList.add('flex');
+        }
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('flex');
+        }
+
+        // 模擬 LINE 快速登入
+        function simulateLineLogin() {
+            currentUser = {
+                name: 'LINE 貴賓使用者',
+                email: 'line_user@omniline.tw',
+                badge: 'LINE 認證會員',
+                bonus: 50,
+                plan: '無有效方案'
+            };
+            saveAndRefresh();
+            closeLoginModal();
+            alert('成功透過 LINE 帳號授權登入！');
+        }
+
+        // Email 登入
+        function handleEmailLogin() {
+            const name = document.getElementById('login-name').value.trim();
+            const email = document.getElementById('login-email').value.trim();
+            if(!name || !email) {
+                alert('請完整填寫姓名與電子信箱');
+                return;
+            }
+            currentUser = {
+                name: name,
+                email: email,
+                badge: '一般註冊會員',
+                bonus: 0,
+                plan: '無有效方案'
+            };
+            saveAndRefresh();
+            closeLoginModal();
+            alert(`歡迎回來，${name}！`);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('omniline_user');
+            updateAuthUI();
+            switchTab('home');
+            alert('已成功登出帳號');
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('omniline_user', JSON.stringify(currentUser));
+            updateAuthUI();
+        }
+
+        // 更新頂部與會員頁面 UI
+        function updateAuthUI() {
+            const headerAction = document.getElementById('auth-header-action');
+            const guestView = document.getElementById('member-guest-view');
+            const userView = document.getElementById('member-user-view');
+
+            if (currentUser) {
+                headerAction.innerHTML = `
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('member')">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+                            ${currentUser.name.charAt(0)}
+                        </div>
+                        <span class="text-sm font-bold text-slate-700 hidden sm:inline">${currentUser.name}</span>
+                    </div>
+                `;
+                guestView.classList.add('hidden');
+                userView.classList.remove('hidden');
+
+                document.getElementById('user-avatar-text').innerText = currentUser.name.charAt(0);
+                document.getElementById('user-display-name').innerText = currentUser.name;
+                document.getElementById('user-display-email').innerText = currentUser.email;
+                document.getElementById('user-badge').innerText = currentUser.badge;
+                document.getElementById('user-bonus-balance').innerText = `NT$ ${currentUser.bonus}`;
+                document.getElementById('user-current-plan').innerText = currentUser.plan;
+            } else {
+                headerAction.innerHTML = `
+                    <button onclick="openLoginModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 shadow-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>登入 / 註冊</span>
+                    </button>
+                `;
+                guestView.classList.remove('hidden');
+                userView.classList.add('hidden');
+            }
+        }
+
+        // 領取加好友紅利
+        function claimBonus() {
+            if (!currentUser) {
+                alert('請先登入會員，才能領取加好友購物金！');
+                openLoginModal();
+                return;
+            }
+            currentUser.bonus += 100;
+            saveAndRefresh();
+            alert('🎉 恭喜您！已成功領取 NT$ 100 加好友專屬購物金！');
+            switchTab('member');
+        }
+
+        // 客服聊天機器人互動邏輯
+        function sendPresetQuery(text) {
+            document.getElementById('chat-input').value = text;
+            sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const chatContainer = document.getElementById('chat-messages');
+
+            // 使用者訊息
+            chatContainer.innerHTML += `
+                <div class="flex items-start justify-end space-x-3">
+                    <div class="bg-emerald-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm max-w-md text-sm">
+                        ${escapeHtml(msg)}
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs flex-shrink-0">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // 模擬客服智慧回覆
+            setTimeout(() => {
+                let reply = "感謝您的詢問！OmniLine 支援完整的 LINE 官方帳號串接與自動化回覆。您可以隨時點擊導覽列的「加LINE好友」與我們保持即時連線。";
+                if(msg.includes('價格') || msg.includes('方案')) {
+                    reply = "我們目前提供「新手入門版 (NT$399)」與「企業商務型 (NT$999)」等方案，您可以前往「方案購買」頁面選購！";
+                } else if(msg.includes('好友')) {
+                    reply = "您可以點擊上方導覽列的「加LINE好友」，掃描 QR Code 或直接點擊連結加入我們的真實官方帳號 @omniline，還能領取 100 元紅利喔！";
+                } else if(msg.includes('付款') || msg.includes('刷卡')) {
+                    reply = "我們支援 LINE Pay、線上信用卡一次付清與超商代碼繳費，所有交易皆透過安全加密處理。";
+                }
+
+                chatContainer.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs flex-shrink-0">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-md text-sm text-slate-700">
+                            ${reply}
+                        </div>
+                    </div>
+                `;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 800);
+        }
+
+        // 結帳彈窗相關
+        function openCheckout(planName, planPrice) {
+            if (!currentUser) {
+                alert('請先登入會員後再進行方案訂閱！');
+                openLoginModal();
+                return;
+            }
+            selectedPlan = { name: planName, price: planPrice };
+            document.getElementById('checkout-plan-title').innerText = `訂閱方案：${planName}`;
+            document.getElementById('checkout-plan-price').innerText = `NT$ ${planPrice} / 月`;
+            
+            document.getElementById('checkout-modal').classList.remove('hidden');
+            document.getElementById('checkout-modal').classList.add('flex');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+            document.getElementById('checkout-modal').classList.remove('flex');
+        }
+
+        function selectPaymentMethod(type) {
+            currentPaymentType = type;
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.className = "payment-method-btn p-3 rounded-2xl border-2 border-slate-200 text-center flex flex-col items-center space-y-1 transition-all";
+            });
+            document.getElementById(`pm-${type}`).className = "payment-method-btn p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 text-center flex flex-col items-center space-y-1 transition-all";
+
+            document.getElementById('form-linepay').classList.add('hidden');
+            document.getElementById('form-credit').classList.add('hidden');
+            document.getElementById('form-cvs').classList.add('hidden');
+
+            document.getElementById(`form-${type}`).classList.remove('hidden');
+        }
+
+        function processCheckout() {
+            currentUser.plan = selectedPlan.name;
+            saveAndRefresh();
+            closeCheckoutModal();
+            alert(`🎉 恭喜您成功訂閱【${selectedPlan.name}】！系統已為您開通對應權限。`);
+            switchTab('member');
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>
